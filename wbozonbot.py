@@ -6,13 +6,17 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 from openai import AsyncOpenAI
 
+# === Переменные окружения ===
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-PROXY_URL = os.getenv("PROXY_URL")
 
+# === Логи ===
 logging.basicConfig(level=logging.INFO)
+
+# === OpenAI клиент ===
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
+# === Обработка сообщений ===
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_input = update.message.text
     logging.info(f"Сообщение от {update.effective_user.username}: {user_input}")
@@ -38,11 +42,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(reply)
 
+# === Запуск приложения ===
 async def main():
     app = (
         ApplicationBuilder()
         .token(TELEGRAM_TOKEN)
-        .proxy_url(PROXY_URL)
         .build()
     )
 
@@ -50,6 +54,7 @@ async def main():
     logging.info("Бот запущен")
     await app.run_polling()
 
+# === Запуск с поддержкой Windows и nest_asyncio ===
 if __name__ == "__main__":
     nest_asyncio.apply()
     asyncio.run(main())
